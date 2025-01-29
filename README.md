@@ -39,17 +39,96 @@ dependencies {
 
 ## Usage
 
-Here's a quick example of how to use SimSlotManager:
+Here's a complete example of how to use SimSlotManager in your MainActivity:
 
-```kotlin
-// Initialize SimSlotManager
-val simSlotManager = SimSlotManager(context)
+```java
+public class MainActivity extends AppCompatActivity {
+    private SimSlotManager simSlotManager;
+    private TextView simInfoTextView;
 
-// Get number of SIM slots
-val simSlotCount = simSlotManager.getSimSlotCount()
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        // Initialize SimSlotManager
+        simSlotManager = new SimSlotManager(this);
+        simInfoTextView = findViewById(R.id.simInfoTextView);
+        
+        // Check for required permissions
+        if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) 
+            != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
+        } else {
+            displaySimInformation();
+        }
+    }
 
-// Check if specific SIM slot is active
-val isSimSlot1Active = simSlotManager.isSimSlotActive(0)
+    private void displaySimInformation() {
+        StringBuilder info = new StringBuilder();
+        
+        // Get number of SIM slots
+        int simSlotCount = simSlotManager.getSimSlotCount();
+        info.append("Total SIM Slots: ").append(simSlotCount).append("\n\n");
+        
+        // Check each SIM slot
+        for (int i = 0; i < simSlotCount; i++) {
+            info.append("SIM Slot ").append(i + 1).append(":\n");
+            
+            // Check if SIM is present and active
+            if (simSlotManager.isSimSlotActive(i)) {
+                info.append("Status: Active\n");
+                
+                // Get carrier name
+                String carrierName = simSlotManager.getCarrierName(i);
+                info.append("Carrier: ").append(carrierName).append("\n");
+                
+                // Get phone number if available
+                String phoneNumber = simSlotManager.getPhoneNumber(i);
+                if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                    info.append("Phone Number: ").append(phoneNumber).append("\n");
+                }
+                
+                // Get network type
+                String networkType = simSlotManager.getNetworkType(i);
+                info.append("Network Type: ").append(networkType).append("\n");
+            } else {
+                info.append("Status: Inactive\n");
+            }
+            info.append("\n");
+        }
+        
+        simInfoTextView.setText(info.toString());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, 
+                                         int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0 
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            displaySimInformation();
+        }
+    }
+}
+```
+
+### XML Layout Example
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/simInfoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp" />
+
+</LinearLayout>
 ```
 
 ## Permissions
@@ -59,16 +138,6 @@ Add these permissions to your AndroidManifest.xml:
 ```xml
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 ```
-
-## Contributing
-
-Contributions are welcome! Feel free to submit issues and enhancement requests.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## License
 
