@@ -12,6 +12,8 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.net.Uri;
 import android.content.Intent;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class PhoneCallManager {
     private final SubscriptionManager subscriptionManager;
     private final TelecomManager telecomManager;
 
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     public PhoneCallManager(Context context) {
         this.context = context;
         this.telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
