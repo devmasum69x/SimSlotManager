@@ -20,20 +20,21 @@ SimSlotManager is a powerful Android library that provides easy management and d
 
 Add it in your root build.gradle at the end of repositories:
 
-```gradle
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
+```
+dependencyResolutionManagement {
+		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+		repositories {
+			mavenCentral()
+			maven { url 'https://www.jitpack.io' }
+		}
+	}
 ```
 
 ### Step 2. Add the dependency
 
 ```gradle
 dependencies {
-    implementation 'com.github.devmasum69x:SimSlotManager:latest-version'
+    implementation 'com.github.devmasum69x:SimSlotManager:1.0.1'
 }
 ```
 
@@ -41,103 +42,108 @@ dependencies {
 
 Here's a complete example of how to use SimSlotManager in your MainActivity:
 
+1. Initialize the PhoneCallManager:
 ```java
-public class MainActivity extends AppCompatActivity {
-    private SimSlotManager simSlotManager;
-    private TextView simInfoTextView;
+PhoneCallManager phoneCallManager = new PhoneCallManager(context);
+```
+
+2. Get SIM card information:
+```java
+// Basic SIM info retrieval
+List<PhoneCallManager.SimInfo> simInfoList = phoneCallManager.getAvailableSimCards();
+
+// Advanced SIM information example with full implementation
+public class SimInfoExample extends AppCompatActivity {
+    private PhoneCallManager phoneCallManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_sim_info);
         
-        // Initialize SimSlotManager
-        simSlotManager = new SimSlotManager(this);
         simInfoTextView = findViewById(R.id.simInfoTextView);
-        
-        // Check for required permissions
-        if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) 
-            != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
-        } else {
-            displaySimInformation();
-        }
+        phoneCallManager = new PhoneCallManager(this);
+        displaySimInformation();
     }
 
     private void displaySimInformation() {
-        StringBuilder info = new StringBuilder();
+        List<PhoneCallManager.SimInfo> simInfoList = phoneCallManager.getAvailableSimCards();
         
-        // Get number of SIM slots
-        int simSlotCount = simSlotManager.getSimSlotCount();
-        info.append("Total SIM Slots: ").append(simSlotCount).append("\n\n");
+        if (simInfoList.isEmpty()) {
+            showSimInfo("No SIM cards available");
+            return;
+        }
+
+        // Display as formatted text
+        StringBuilder plainText = new StringBuilder();
+        plainText.append("📱 Available SIM Cards:\n\n");
         
-        // Check each SIM slot
-        for (int i = 0; i < simSlotCount; i++) {
-            info.append("SIM Slot ").append(i + 1).append(":\n");
-            
-            // Check if SIM is present and active
-            if (simSlotManager.isSimSlotActive(i)) {
-                info.append("Status: Active\n");
-                
-                // Get carrier name
-                String carrierName = simSlotManager.getCarrierName(i);
-                info.append("Carrier: ").append(carrierName).append("\n");
-                
-                // Get phone number if available
-                String phoneNumber = simSlotManager.getPhoneNumber(i);
-                if (phoneNumber != null && !phoneNumber.isEmpty()) {
-                    info.append("Phone Number: ").append(phoneNumber).append("\n");
-                }
-                
-                // Get network type
-                String networkType = simSlotManager.getNetworkType(i);
-                info.append("Network Type: ").append(networkType).append("\n");
-            } else {
-                info.append("Status: Inactive\n");
-            }
-            info.append("\n");
+        for (PhoneCallManager.SimInfo simInfo : simInfoList) {
+            plainText.append("🔵 SIM ").append(simInfo.getSlotIndex() + 1).append(":\n")
+                    .append("   • Display Name: ").append(simInfo.getDisplayName()).append("\n")
+                    .append("   • Carrier: ").append(simInfo.getCarrierName()).append("\n")
+                    .append("   • Slot Index: ").append(simInfo.getSlotIndex() + 1).append("\n\n");
         }
         
-        simInfoTextView.setText(info.toString());
+        showSimInfo(plainText.toString());
+
+        // Display as JSON (optional)
+        Gson gson = new Gson();
+        String jsonOutput = gson.toJson(simInfoList);
+        Log.d("SimInfo", "JSON format: " + jsonOutput);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, 
-                                         int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1 && grantResults.length > 0 
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            displaySimInformation();
-        }
+    private void showSimInfo(String simInfo) {
+        simInfoTextView.setText(simInfo);
     }
 }
 ```
 
-### XML Layout Example
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/simInfoTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
-
-</LinearLayout>
+3. Make a phone call:
+```java
+phoneCallManager.makePhoneCall("*247#", 0);  // USSD Call using SIM1
+phoneCallManager.makePhoneCall("01812345678", 1);  // Normal call using SIM2
 ```
+
+
 
 ## Permissions
 
 Add these permissions to your AndroidManifest.xml:
 
 ```xml
-<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+ <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+ <uses-permission android:name="android.permission.CALL_PHONE" />
+ <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 ```
+
+## SIM Information API
+
+The library provides detailed SIM card information including:
+- Display Name
+- Carrier Name
+- Slot Index
+- Subscription ID
+- Network Status
+
+## Error Handling
+
+The library includes comprehensive error handling for:
+- Missing permissions
+- Invalid SIM states
+- Network availability
+- Device compatibility
+
+
+## Support
+
+For enterprise support and custom development:
+
+**Contact**: Masum Mahmud  
+**Email**: [developermasum.help@gmail.com](developermasum.help@gmail.com)  
+**Professional Inquiries**: +8801923329579 (WhatsApp/Telegram)
+**Project Link**: [https://github.com/devmasum69x/SimSlotManager](https://github.com/devmasum69x/SimSlotManager)
+
 
 ## License
 
@@ -157,8 +163,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-## Contact
 
-Dev Masum - [@devmasum69x](https://github.com/devmasum69x)
-
-Project Link: [https://github.com/devmasum69x/SimSlotManager](https://github.com/devmasum69x/SimSlotManager)
