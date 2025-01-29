@@ -1,11 +1,18 @@
-# SimSlotManager
+# 📱Sim Slot Manager
 
 [![](https://jitpack.io/v/devmasum69x/SimSlotManager.svg)](https://jitpack.io/#devmasum69x/SimSlotManager)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
+[![Java](https://img.shields.io/badge/Java-8-brightgreen?style=flat&logo=java)](https://www.oracle.com/java/)
+[![Android Studio](https://img.shields.io/badge/Android_Studio-2024.2.2-blue?style=flat&logo=android-studio)](https://developer.android.com/studio)
+
+
+
+
 
 SimSlotManager is a powerful Android library that provides easy management and detection of SIM card slots in Android devices. This library simplifies the process of handling dual SIM functionality and SIM card information in your Android applications.
 
-## Features
+## ✨Features
 
 - 📱 Detect number of SIM slots available
 - 🔄 Get real-time SIM card status
@@ -14,7 +21,7 @@ SimSlotManager is a powerful Android library that provides easy management and d
 - 🔐 Handle dual SIM functionality
 - 💫 Easy integration
 
-## Installation
+## ⬇️Installation
 
 ### Step 1. Add the JitPack repository to your build file
 
@@ -38,7 +45,7 @@ dependencies {
 }
 ```
 
-## Usage
+## 🚀Usage
 
 Here's a complete example of how to use SimSlotManager in your MainActivity:
 
@@ -107,7 +114,7 @@ phoneCallManager.makePhoneCall("01812345678", 1);  // Normal call using SIM2
 
 
 
-## Permissions
+## 🔓Permissions
 
 Add these permissions to your AndroidManifest.xml:
 
@@ -117,7 +124,7 @@ Add these permissions to your AndroidManifest.xml:
  <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 ```
 
-## SIM Information API
+## 📶SIM Information API
 
 The library provides detailed SIM card information including:
 - Display Name
@@ -126,7 +133,7 @@ The library provides detailed SIM card information including:
 - Subscription ID
 - Network Status
 
-## Error Handling
+## ⛔Error Handling
 
 The library includes comprehensive error handling for:
 - Missing permissions
@@ -135,7 +142,7 @@ The library includes comprehensive error handling for:
 - Device compatibility
 
 
-## Support
+## 👨🏻‍💻Support
 
 For enterprise support and custom development:
 
@@ -145,7 +152,7 @@ For enterprise support and custom development:
 **Project Link**: [https://github.com/devmasum69x/SimSlotManager](https://github.com/devmasum69x/SimSlotManager)
 
 
-## License
+## 📋License
 
 ```
 Copyright 2024 devmasum69x
